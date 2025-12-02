@@ -20,4 +20,8 @@ export class RegisterBodyDto extends LoginBodyDto {
 export class RegisterResponseDto {
   @Exclude()
   password: string;
+
+  constructor(object: Record<string, any>) {
+    Object.assign(this, object);
+  }
 }
