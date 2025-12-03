@@ -1,27 +1,29 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
-import { RegisterResponseDto } from './auth.dto';
+import { TokenService } from 'src/shared/services/token.service';
+import { CustomUnprocessableEntityException } from 'src/shared/types/custom.type';
+import { TokenPayload } from 'src/shared/types/jwt.type';
+import { LoginBodyDto, RegisterBodyDto, RegisterResponseDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly hashingService: HashingService,
-    private readonly prismaService: PrismaService,
+    private readonly prisma: PrismaService,
+    private readonly tokenService: TokenService,
   ) {}
 
-  async register(body: any) {
+  async register(body: RegisterBodyDto) {
     try {
       const hashedPassword = await this.hashingService.hash(body.password);
-      const user = await this.prismaService.user.create({
+      const user = await this.prisma.user.create({
         data: {
           email: body.email,
           password: hashedPassword,
@@ -39,5 +41,52 @@ export class AuthService {
 
       throw new InternalServerErrorException('Lỗi máy chủ không xác định');
     }
+  }
+
+  async login(body: LoginBodyDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: body.email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Account does not exist');
+    }
+
+    const isPasswordValid = await this.hashingService.compare(
+      body.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new CustomUnprocessableEntityException([
+        {
+          field: 'password',
+          error: 'Password is incorrect',
+        },
+      ]);
+    }
+
+    const tokens = await this.generateTokens({ userId: user.id });
+
+    return tokens;
+  }
+
+  async generateTokens(payload: TokenPayload) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.tokenService.signAccessToken(payload),
+      this.tokenService.signRefreshToken(payload),
+    ]);
+    const decodedRefreshToken =
+      await this.tokenService.verifyRefreshToken(refreshToken);
+
+    await this.prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: payload.userId,
+        expiresAt: new Date((decodedRefreshToken.exp as any) * 1000),
+      },
+    });
+
+    return { accessToken, refreshToken };
   }
 }
