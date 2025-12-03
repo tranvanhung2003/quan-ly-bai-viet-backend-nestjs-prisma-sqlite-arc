@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
-import { CustomUnprocessableEntityException } from 'src/shared/types/custom.type';
+import { CustomUnprocessableEntityException } from 'src/shared/types/custom-exception.type';
 import { EncodedPayload } from 'src/shared/types/jwt.type';
 import {
   LoginBodyDto,

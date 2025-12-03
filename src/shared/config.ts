@@ -3,7 +3,7 @@ import { IsNumber, IsString, validateSync } from 'class-validator';
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
-import { CustomErrors } from './types/custom.type';
+import { CustomErrors } from './types/custom-exception.type';
 
 // Kiểm tra xem có file .env không
 if (!fs.existsSync(path.resolve('.env'))) {
