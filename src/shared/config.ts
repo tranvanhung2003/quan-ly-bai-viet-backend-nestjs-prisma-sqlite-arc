@@ -12,11 +12,14 @@ if (!fs.existsSync(path.resolve('.env'))) {
 }
 
 class ConfigSchema {
+  @IsNumber()
+  PORT: number;
+
   @IsString()
   DATABASE_URL: string;
 
-  @IsNumber()
-  PORT: number;
+  @IsString()
+  SECRET_API_KEY: string;
 
   @IsString()
   ACCESS_TOKEN_SECRET: string;
