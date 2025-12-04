@@ -5,10 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { CustomUnprocessableEntityException } from 'src/shared/helpers';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
-import { CustomUnprocessableEntityException } from 'src/shared/types/custom-exception.type';
 import { EncodedPayload } from 'src/shared/types/jwt.type';
 import {
   LoginBodyDto,
