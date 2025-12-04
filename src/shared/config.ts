@@ -7,7 +7,7 @@ import { CustomErrors } from './helpers';
 
 // Kiểm tra xem có file .env không
 if (!fs.existsSync(path.resolve('.env'))) {
-  console.error('Không tìm thấy file .env');
+  console.log('Không tìm thấy file .env');
   process.exit(1);
 }
 
@@ -37,7 +37,7 @@ const configServer = plainToInstance(ConfigSchema, process.env, {
 const errors = validateSync(configServer);
 
 if (errors.length > 0) {
-  console.error('Các giá trị cấu hình trong file .env không hợp lệ');
+  console.log('Các giá trị cấu hình trong file .env không hợp lệ');
 
   const errorDetails: CustomErrors = errors.map((error) => ({
     field: error.property,

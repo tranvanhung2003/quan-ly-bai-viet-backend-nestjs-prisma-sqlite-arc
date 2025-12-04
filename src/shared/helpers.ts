@@ -27,7 +27,6 @@ export function isPrismaClientKnownRequestError(
 export function isPrismaClientUniqueConstraintError(
   error: Prisma.PrismaClientKnownRequestError,
 ) {
-  console.log(typeof error);
   return error.code === 'P2002';
 }
 
