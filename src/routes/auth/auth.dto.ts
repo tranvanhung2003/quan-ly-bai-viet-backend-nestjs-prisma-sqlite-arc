@@ -33,3 +33,5 @@ export class RefreshTokenBodyDto {
   @IsString()
   refreshToken: string;
 }
+
+export class LogoutBodyDto extends RefreshTokenBodyDto {}

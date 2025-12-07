@@ -17,6 +17,7 @@ import { TokenService } from 'src/shared/services/token.service';
 import { EncodedPayload } from 'src/shared/types/jwt.type';
 import {
   LoginBodyDto,
+  LogoutBodyDto,
   RefreshTokenBodyDto,
   RegisterBodyDto,
   RegisterResponseDto,
@@ -120,6 +121,28 @@ export class AuthService {
 
       // Tạo mới cặp accessToken và refreshToken
       return await this.generateTokens({ userId });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (isPrismaClientNotFoundError(error)) {
+          throw new UnauthorizedException('Refresh token has been revoked');
+        }
+      }
+
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async logout(body: LogoutBodyDto) {
+    try {
+      const { refreshToken } = body;
+
+      await this.tokenService.verifyRefreshToken(refreshToken);
+
+      await this.prisma.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      return { message: 'Logout successful' };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (isPrismaClientNotFoundError(error)) {
