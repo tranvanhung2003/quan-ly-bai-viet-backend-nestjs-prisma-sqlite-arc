@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   CallHandler,
@@ -6,6 +5,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { map, Observable } from 'rxjs';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const ctx = context.switchToHttp();
-        const response = ctx.getResponse();
+        const response = ctx.getResponse<Response>();
         const statusCode = response.statusCode;
 
         return { statusCode, data };

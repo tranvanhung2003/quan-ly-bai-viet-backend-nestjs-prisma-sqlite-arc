@@ -11,12 +11,12 @@ export class PostsService {
     return await this.prisma.post.findMany();
   }
 
-  async createPost(body: any) {
+  async createPost(body: any, userId: number) {
     return await this.prisma.post.create({
       data: {
         title: body.title,
         content: body.content,
-        authorId: body.authorId,
+        authorId: userId,
       },
     });
   }

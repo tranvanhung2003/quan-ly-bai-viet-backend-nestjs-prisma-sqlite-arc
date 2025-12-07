@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthType, ConditionGuard } from 'src/shared/constants/auth.constant';
 import { Auth } from 'src/shared/decorators/auth.decorator';
+import { User } from 'src/shared/decorators/user.decorator';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -22,8 +23,9 @@ export class PostsController {
   }
 
   @Post()
-  createPost(@Body() body: any) {
-    return this.postsService.createPost(body);
+  @Auth([AuthType.BEARER, AuthType.API_KEY])
+  createPost(@Body() body: any, @User('userId') userId: number) {
+    return this.postsService.createPost(body, userId);
   }
 
   @Get(':id')
