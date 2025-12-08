@@ -1,5 +1,3 @@
-import { User } from '@prisma/client';
-import { Exclude } from 'class-transformer';
 import { IsString, Length } from 'class-validator';
 import { Match } from 'src/shared/decorators/custom-validator.decorator';
 
@@ -19,20 +17,6 @@ export class RegisterBodyDto extends LoginBodyDto {
   @IsString()
   @Match('password')
   confirmPassword: string;
-}
-
-export class RegisterResponseDto implements User {
-  id: number;
-  email: string;
-  name: string;
-  @Exclude()
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  constructor(partial: Partial<RegisterResponseDto>) {
-    Object.assign(this, partial);
-  }
 }
 
 export class RefreshTokenBodyDto {

@@ -45,19 +45,21 @@ export class AuthenticationGuard implements CanActivate {
       (authType) => this.authGuardsMap[authType],
     );
 
-    const promiseGuards = guards.map(async (guard) => {
-      try {
-        const result = await guard.canActivate(context);
+    const promiseGuards: Promise<[boolean, string]>[] = guards.map(
+      async (guard) => {
+        try {
+          const result = await guard.canActivate(context);
 
-        return [result, ''] as [boolean, string];
-      } catch (error) {
-        if (error instanceof UnauthorizedException) {
-          return [false, error.message] as [boolean, string];
-        } else {
-          return [false, 'Unauthorized'] as [boolean, string];
+          return [result, ''] as [boolean, string];
+        } catch (error) {
+          if (error instanceof UnauthorizedException) {
+            return [false, error.message] as [boolean, string];
+          } else {
+            return [false, 'Unauthorized'] as [boolean, string];
+          }
         }
-      }
-    });
+      },
+    );
 
     const results = await Promise.all(promiseGuards);
 

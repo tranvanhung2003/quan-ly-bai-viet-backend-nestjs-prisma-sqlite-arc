@@ -11,6 +11,7 @@ import {
   isPrismaClientNotFoundError,
   isPrismaClientUniqueConstraintError,
 } from 'src/shared/helpers/helpers';
+import { UserModel } from 'src/shared/models/user.model';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 import { TokenService } from 'src/shared/services/token.service';
@@ -20,7 +21,6 @@ import {
   LogoutBodyDto,
   RefreshTokenBodyDto,
   RegisterBodyDto,
-  RegisterResponseDto,
 } from './auth.dto';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class AuthService {
         },
       });
 
-      return new RegisterResponseDto(user);
+      return new UserModel(user);
     } catch (error) {
       if (isPrismaClientKnownRequestError(error)) {
         if (isPrismaClientUniqueConstraintError(error)) {

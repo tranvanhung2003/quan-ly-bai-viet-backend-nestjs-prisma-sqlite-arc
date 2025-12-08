@@ -18,8 +18,8 @@ export class PostsController {
 
   @Get()
   @Auth([AuthType.BEARER, AuthType.API_KEY], { condition: ConditionGuard.OR })
-  getPosts() {
-    return this.postsService.getPosts();
+  getPosts(@User('userId') userId: number) {
+    return this.postsService.getPosts(userId);
   }
 
   @Post()

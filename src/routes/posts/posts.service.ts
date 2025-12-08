@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
+import { PostModel } from 'src/shared/models/post.model';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPosts() {
-    return await this.prisma.post.findMany();
+  async getPosts(userId: number) {
+    const posts = await this.prisma.post.findMany({
+      where: { authorId: userId },
+      include: { author: true },
+    });
+
+    return PostModel.fromArray(posts);
   }
 
   async createPost(body: any, userId: number) {
